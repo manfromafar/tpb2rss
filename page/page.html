@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>TPB2RSS - A RSS feed generator for The Pirate Bay</title>
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="HandheldFriendly" content="True" />
+	<style type="text/css">
+		body {
+			width: 100%;
+			height: 100%;
+			padding: 0 0 0 0;
+			margin: 0 0 0 0;
+			background: #4E818D; 
+			color: #FFFFFF;
+			font: 16px sans-serif; 
+			position: absolute;
+		}
+
+		.background {
+			height: 100%;
+			width: 100%;
+			background-image: -ms-radial-gradient(center, ellipse farthest-corner, #85DCF2 0%, #5B97A6 100%);
+			background-image: -moz-radial-gradient(center, ellipse farthest-corner, #85DCF2 0%, #5B97A6 100%);
+			background-image: -o-radial-gradient(center, ellipse farthest-corner, #85DCF2 0%, #5B97A6 100%);
+			background-image: -webkit-gradient(radial, center center, 0, center center, 498, color-stop(0, #85DCF2), color-stop(1, #5B97A6));
+			background-image: -webkit-radial-gradient(center, ellipse farthest-corner, #85DCF2 0%, #5B97A6 100%);
+			background-image: radial-gradient(ellipse farthest-corner at center, #85DCF2 0%, #5B97A6 100%);
+			position: absolute;
+		}
+
+		#container {
+			height: 350px;
+			width: 500px;
+			top: 50%;
+			left: 50%;
+			margin-top: -175px;
+			margin-left: -250px;
+			position: absolute;
+		}
+
+		header {
+			width: 100%;
+			margin: 0px auto;
+		}
+
+		h1 {
+			text-align: center;
+			color: #FFFFFF;
+			line-height: 95px;
+			font-size: 95px;
+			font-family: "Impact", sans-serif;
+			font-weight: bolder;
+			text-shadow: #253e45 -1px 1px 0,
+				#253e45 -2px 2px 0;
+			margin: 70px 0 0 0;
+			display: block;
+		}
+
+		a {
+			color: #555555;
+			text-decoration: none;
+		}
+
+		#search-box {;
+			-webkit-border-radius: 5px;
+			-moz-border-radius: 5px;
+			border-radius: 5px;
+			background-color: #FFFFFF;
+			text-align: center;
+			width: 500px;
+			height: 42px;
+			line-height: 42px;
+			left: 50%;
+			margin-top: 10px;
+			margin-left: -250px;
+			position: relative;
+		}
+
+		#search-text {
+			font-size: 14px;
+			color: #DDDDDD;
+			border-width: 0;
+			background: transparent;
+		}
+
+		#search-box input[type="text"] {
+			margin-top: 0px;
+			margin-left: -100px;
+			width: 380px;
+			padding: 11px 0 12px 1em;
+			color: #333333;
+			outline: none;
+		}
+
+		#search-button {
+			position: absolute;
+			top: 0;
+			right: 0;
+			height: 42px;
+			line-height: 42px;
+			width: 100px;
+			font-size: 14px;
+			color: #FFFFFF;
+			text-transform: uppercase;
+			text-align: center;
+			border-width: 0;
+			-webkit-border-radius: 0px 5px 5px 0px;
+			-moz-border-radius: 0px 5px 5px 0px;
+			border-radius: 0px 5px 5px 0px;
+			cursor: pointer;
+			transition-duration: .5s;
+		}
+
+		.generate-feed {
+			background-color: #243C42;
+		}
+
+		.open-feed {
+			background-color: #121E21;
+		}
+
+		#message {
+			width: 150px;
+			padding: 8px 8px;
+			color: #B94A48;
+			text-align: center;
+			margin-top: 40px;
+			margin-left: 175px;
+			background-color: #F2DEDE;
+			text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+			border: 1px solid #FBEED5;
+			-webkit-border-radius: 4px;
+			-moz-border-radius: 4px;
+			border-radius: 4px;
+			position: relative;
+		}
+
+		#github {
+			width: auto;
+			right: 10px;
+			top: 20px;
+			position: absolute;
+		}
+
+		#github iframe {
+			width: 90px;
+			height: 30px;
+		}
+
+		#extensions {
+			width: auto;
+			text-align: right;
+			right: 20px;
+			bottom: 20px;
+			position: absolute;
+		}
+
+		#extensions span {
+			display: block;
+		}
+
+		@media screen and (max-width: 640px) {
+			h1 {
+				font-size: 60px;
+			}
+
+			#container {
+				width: 320px;
+				margin-left: -160px;
+			}
+
+			#search-box {
+				width: 310px;
+				margin-left: -155px;
+			}
+
+			#search-box input[type="text"] {
+				width: 190px;			
+			}
+		}
+	</style>
+	<!--[if IE]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script>
+	function changetext(){
+		if (document.getElementById("search-button").innerHTML == "Open feed"){
+			window.open(document.getElementById("search-text").value, "_blank");
+		} else {
+			document.getElementById("search-button").innerHTML = "Open feed";
+			document.getElementById("search-button").className = "open-feed";
+			var url = window.location.protocol + "//" + window.location.host + "/";
+			var input = document.getElementById("search-text").value;
+			var input = input.replace(/^((http)s{0,1}:\/\/(www.){0,1}){0,1}thepiratebay\.[a-z]{1,}\//gi, "");
+			if ((input.substring(0, 7) != "search/") && (input.substring(0, 7) != "browse/") && (input.substring(0, 5) != "user/")) {
+				var input = input.replace(/\/|\s|&|%|#|>|</g, "%20").replace("?", "%3F").replace(/^(%20)(%20)*/, "").replace(/(%20)(%20)*$/, "");
+				var input = "search/" + input;
+			};
+			if (input.substring(7, url.length + 7) != url) {
+				document.getElementById("search-text").value = url + input;
+			};
+		}
+		document.getElementById("search-text").focus();
+		document.getElementById("search-text").select();
+	}
+	function checkcontent(){
+		var url = window.location.protocol + "//" + window.location.host + "/";
+		var input = document.getElementById("search-text").value;
+		if ((input.length > url.length) && (input.substring(0, url.length ) == url)) {
+			document.getElementById("search-button").innerHTML = "Open feed";
+			document.getElementById("search-button").className = "open-feed";
+		} else {
+			document.getElementById("search-button").innerHTML = "Generate";
+			document.getElementById("search-button").className = "generate-feed";
+		};
+	}
+	</script>
+</head>
+<body>
+	<div class="background"></div>
+	<div id="github">
+		<iframe src="http://ghbtns.com/github-btn.html?user=camporez&repo=tpb2rss&type=watch&count=true" height="30" width="118" frameborder="0" scrolling="0" allowTransparency="true"></iframe>
+		<iframe src="http://ghbtns.com/github-btn.html?user=camporez&repo=tpb2rss&type=fork&count=true" height="30" width="118" frameborder="0" scrolling="0" allowTransparency="true"></iframe>
+	</div>
+	<div id="container">
+		<header>
+			<h1>TPB2RSS</h1>
+		</header>
+		<div id="search-box">
+			<form method="post" onsubmit="changetext(); return false;">
+				<input id="search-text" type="text" placeholder="Type a search term or paste a TPB link in here" onkeyup="checkcontent();" autocomplete="off" autofocus required />
+				<button type="submit" id="search-button" class="generate-feed">Generate</button>
+			</form>
+		</div>
+		<div id="message">Page not found</div>
+	</div>
+	<div id="extensions">
+		<span>Bookmarklet: <a href="javascript:!function(){if(/^((http)s{0,1}:\/\/(www.){0,1}){0,1}thepiratebay\.[a-z]+\/(search\/(.)+|user\/(.)+|browse\/[0-9]+|recent)+/.test(location.href)){if(/^((http)s{0,1}:\/\/(www.){0,1}){0,1}thepiratebay\.[a-z]+\/browse\/[0-9]+/.test(location.href))var%20t=%22http://rss.thepiratebay.se/%22+window.location.pathname.split(%22/%22)[2];else%20if(/^((http)s{0,1}:\/\/(www.){0,1}){0,1}thepiratebay\.[a-z]+\/user\/(.)+/.test(location.href))var%20t=document.getElementsByClassName(%22rss%22)[0].href;else%20var%20t=document.URL,t=t.replace(/^((http)s{0,1}:\/\/(www.){0,1}){0,1}thepiratebay\.[a-z]{1,}\//gi,%22http://bay.brunelli.me/%22);window.open(t,%22_blank%22)}}();" class="bookmarklet" alt="TPB2RSS">TPB2RSS</a></span>
+		<span>Chrome: <a href="https://github.com/camporez/tpb2rss/tree/master/chrome">Get extension</a></span>
+		<span>Firefox: <a href="https://openuserjs.org/scripts/camporez/TPB2RSS">Greasemonkey script</a></span>
+	</div>
+</body>
+</html>
